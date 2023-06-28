@@ -1,6 +1,7 @@
 const express = require('express');
 const routes = express.Router();
-const User = require('../models/usuario')
+const User = require('../models/usuario');
+const { where } = require('sequelize');
 
 function createRoute(){
     routes.post('/usuarios', async(req, res) =>{
@@ -11,30 +12,33 @@ function createRoute(){
 }
 
 function findAllRoute(){
-    routes.get('/usuarios', (req, res) =>{
-        console.log('FindAll',req.body)
-        res.json();
+    routes.get('/usuarios', async(req, res) =>{
+        res.json(await User.findAll());
+       
     });
 }
 
 function findByIdRoute(){
-    routes.get('/usuarios/:id', (req, res) =>{
-        console.log('FindById',req.params);
-        res.json();
+    routes.get('/usuarios/:id', async(req, res) =>{   
+        res.json(await User.findOne({where: {id: req.params.id}}));
     });
 }
 
 function updateRoute(){
-    routes.put('/usuarios', (req, res) =>{
-        console.log('Update',req.body)
-        res.json([]);
+    routes.put('/usuarios', async(req, res) =>{
+        
+        res.json(await User.update(req.body, {
+            where: {
+                id: req.body.id
+            }
+        }));
     });
 }
 
 function removeRoute(){
-    routes.delete('/usuarios/:id', (req, res) =>{
+    routes.delete('/usuarios/:id', async(req, res) =>{
         console.log(req.params);
-        res.json([]);
+        res.json(await User.destroy({where: {id: req.params.id}}));
     });
 }
 
